@@ -4,6 +4,8 @@
 #include <htmlcxx/html/ParserDom.h>
 #include <htmlcxx/html/utils.h>
 #include <htmlcxx/html/Uri.h>
+#include <boost/regex.hpp>
+#include <regex>
 
 using namespace std;
 using namespace htmlcxx;
@@ -22,12 +24,14 @@ int main(void)
 
   curl = curl_easy_init();
   if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/libcurl/");
+    //curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/libcurl/");
+	curl_easy_setopt(curl, CURLOPT_URL, "http://www.news.com.au");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
 
+    //cout << readBuffer << endl;
     HTML::ParserDom parser;
     tree<HTML::Node> dom = parser.parseTree(readBuffer);
 
@@ -49,6 +53,7 @@ int main(void)
 
     cout << "print all links" << endl;
 
+    const std::regex brexpress("^(?:https?:\/\/)?([^\/]+)(?:\/?.*\/?)\/(.*)$");
     it = dom.begin();
     end = dom.end();
     for (; it != end; ++it)
@@ -56,7 +61,8 @@ int main(void)
       	if (it->tagName() == "a")
       	{
       		it->parseAttributes();
-      		cout << it->attribute("href").second << endl;
+      		if(std::regex_match(it->attribute("href").second, brexpress))
+      			cout << it->attribute("href").second << endl;
       		cout << "-----------------" << endl;
       	}
       }
