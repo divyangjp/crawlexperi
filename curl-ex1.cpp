@@ -2,6 +2,8 @@
 #include <string>
 #include <curl/curl.h>
 #include <htmlcxx/html/ParserDom.h>
+#include <htmlcxx/html/utils.h>
+#include <htmlcxx/html/Uri.h>
 
 using namespace std;
 using namespace htmlcxx;
