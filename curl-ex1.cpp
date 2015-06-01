@@ -6,6 +6,7 @@
 #include <htmlcxx/html/Uri.h>
 #include <boost/regex.hpp>
 #include <regex>
+#include <string.h>
 
 using namespace std;
 using namespace htmlcxx;
@@ -44,6 +45,8 @@ int main(void)
     //print all text
     for(; it != end; ++it)
     {
+        if(it->isTag() && (strcasecmp(it->tagName().c_str(), "script") == 0))
+            continue;
     	if((!it->isTag()) && (!it->isComment()))
     	{
     		cout << it->text() << endl;
@@ -53,7 +56,7 @@ int main(void)
 
     cout << "print all links" << endl;
 
-    const std::regex brexpress("^(?:https?:\/\/)?([^\/]+)(?:\/?.*\/?)\/(.*)$");
+    const boost::regex brexpress("https?:\/\/[^\s/$.?#].[^\s]*");
     it = dom.begin();
     end = dom.end();
     for (; it != end; ++it)
@@ -61,9 +64,8 @@ int main(void)
       	if (it->tagName() == "a")
       	{
       		it->parseAttributes();
-      		if(std::regex_match(it->attribute("href").second, brexpress))
+      		if(boost::regex_match(it->attribute("href").second, brexpress))
       			cout << it->attribute("href").second << endl;
-      		cout << "-----------------" << endl;
       	}
       }
 
