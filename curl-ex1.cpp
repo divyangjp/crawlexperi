@@ -27,7 +27,7 @@ int main(void)
   curl = curl_easy_init();
   if(curl) {
     //curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/libcurl/");
-	curl_easy_setopt(curl, CURLOPT_URL, "timesofindia.indiatimes.com");
+	curl_easy_setopt(curl, CURLOPT_URL, "http://www.news.com.au");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     res = curl_easy_perform(curl);
