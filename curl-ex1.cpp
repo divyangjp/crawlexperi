@@ -7,6 +7,7 @@
 #include <boost/regex.hpp>
 #include <regex>
 #include <string.h>
+#include <algorithm>
 
 using namespace std;
 using namespace htmlcxx;
@@ -26,7 +27,7 @@ int main(void)
   curl = curl_easy_init();
   if(curl) {
     //curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/libcurl/");
-	curl_easy_setopt(curl, CURLOPT_URL, "http://www.news.com.au");
+	curl_easy_setopt(curl, CURLOPT_URL, "timesofindia.indiatimes.com");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     res = curl_easy_perform(curl);
@@ -37,19 +38,30 @@ int main(void)
     tree<HTML::Node> dom = parser.parseTree(readBuffer);
 
     //Print whole DOM tree
-    //cout << dom << endl;
+    cout << dom << endl;
 
     tree<HTML::Node>::iterator it = dom.begin();
     tree<HTML::Node>::iterator end = dom.end();
 
+    string tagarr[] = {"script", "style"};
     //print all text
     for(; it != end; ++it)
     {
-        if(it->isTag() && (strcasecmp(it->tagName().c_str(), "script") == 0))
+        //if(it->isTag() && (strcasecmp(it->tagName().c_str(), "script") == 0))
+        int tagarr_count = sizeof(tagarr)/sizeof(string);
+        string* pstr = std::find(tagarr, tagarr+tagarr_count, it->tagName());
+        if(pstr != tagarr+tagarr_count)
+        {
+            ++it;
             continue;
+        }
     	if((!it->isTag()) && (!it->isComment()))
     	{
-    		cout << it->text() << endl;
+            if(it->text().find_first_not_of(" \t\n\v\f\r") == std::string::npos)
+            {
+                continue;
+            }
+    		cout << "||" << it->text() << "||" << endl;
     		cout << "--------------------------" << endl;
     	}
     }
